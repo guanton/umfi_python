@@ -29,8 +29,6 @@ if __name__ == "__main__":
     niter = 100
     nX = 4
     results = getResultsPlot(simTest, nobs, niter, nX)
-    results = getResultsPlot(simTest, nobs, niter, nX)
-    print(results.head())
 
     # Plot the results
     plot_results(results)
