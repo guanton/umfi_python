@@ -18,12 +18,11 @@ def UMFI(X, y, preprocessing="lr"):
 
     :return: A numpy array of shape (n_features,) containing the feature importance scores for each predictor.
     '''
+    # initialize feature importance vector
     fi = np.zeros(X.shape[1])
 
     for i in range(X.shape[1]):
         col_name = X.columns[i]
-        # print(f"Processing column: {col_name} with preprocessing: {preprocessing}")
-
         if preprocessing == "ot":
             if is_discrete(X[col_name]):
                 newX = preprocess_ot_discrete(X, col_name)
@@ -61,8 +60,6 @@ def UMFI(X, y, preprocessing="lr"):
     # Set negative feature importance scores to 0
     fi[fi < 0] = 0
     return fi
-
-
 
 
 def is_discrete(column):

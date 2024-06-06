@@ -24,14 +24,14 @@ def preprocess_lr(dat, protect):
     if np.std(dat[protect]) < 1e-6:
         dat[protect] += np.random.normal(size=len(dat))
 
-    for i in tomodify:
-        # Add random noise ahead of regression if the feature variable is too sparse
-        if np.std(dat[i]) < 1e-6:
-            dat[i] += np.random.normal(size=len(dat))
+    X = dat[[protect]].values  # Predictor (protected variable)
 
-        # We will regress each non-protected variable x_i on the protected variable
-        X = dat[[protect]].values  # Predictor (protected variable)
-        y = dat[i].values  # Response (feature variable)
+    for col in tomodify:
+        # Add random noise ahead of regression if the feature variable is too sparse
+        if np.std(dat[col]) < 1e-6:
+            dat[col] += np.random.normal(size=len(dat))
+
+        y = dat[col].values  # Response (feature variable)
 
         # Fit ordinary least squares regression
         model = LinearRegression().fit(X, y)
@@ -39,10 +39,10 @@ def preprocess_lr(dat, protect):
 
         # Replace the original feature with its residual if the regression is significant
         if model.score(X, y) > 0.01:
-            modified_dat[i] = residuals
+            modified_dat[col] = residuals
 
         # Add random noise if the residual variance is zero to avoid singularities
-        if np.var(modified_dat[i]) == 0:
-            modified_dat[i] += np.random.normal(size=len(modified_dat))
+        if np.var(modified_dat[col]) == 0:
+            modified_dat[col] += np.random.normal(size=len(modified_dat))
 
     return modified_dat
