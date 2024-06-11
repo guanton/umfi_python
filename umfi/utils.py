@@ -7,7 +7,7 @@ def is_discrete(series):
     return pd.api.types.is_integer_dtype(series)
 
 
-def plot_results(df, as_percentage=False):
+def plot_results(df, as_percentage=True):
     '''
     Plots the UMFI feature importance scores.
 
@@ -20,7 +20,8 @@ def plot_results(df, as_percentage=False):
 
     if as_percentage:
         # Normalize the importance scores to sum to 100% per method
-        df['Importance'] = df.groupby(['Method', 'Iteration'])['Importance'].apply(lambda x: 100 * x / x.sum()).reset_index(level=[0, 1], drop=True)
+        df['Importance'] = df.groupby(['Method', 'Iteration'], observed=False)['Importance'].apply(lambda x: 100 * x / x.sum()).reset_index(level=[0, 1], drop=True)
+
 
     # Convert 'Feature' and 'Method' to categorical if they are not already
     df['Feature'] = df['Feature'].astype('category')
@@ -35,5 +36,11 @@ def plot_results(df, as_percentage=False):
     plt.title("UMFI Feature Importance")
     plt.legend(title="Method")
     plt.show()
+
+def rank(scores):
+    ranks = []
+    for score in scores:
+        ranks.append(scores.index(score) + 1)
+    return ranks
 
 

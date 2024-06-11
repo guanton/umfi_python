@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from umfi.preprocess_OT import *
 
 def generate_nonlinear_interaction_data(nobs):
     """
@@ -269,16 +270,22 @@ def generate_terc2_data(nobs):
 
 
 def generate_mixed_cts_discrete_data(nobs):
-    x0 = np.random.exponential(1, nobs)
+    x0 = np.random.normal(0, 1, nobs)
     x1 = np.random.uniform(-0.5, 0.5, nobs)
 
     # Generate variables x1 and S from a standard normal distribution N(0, 1)
     x2 = np.random.normal(0, 1, nobs)
-    x3 = np.random.binomial(1, 0.5, nobs)
-    x4 = np.random.binomial(5, 0.3, nobs)
+    x3 = np.random.binomial(4, 0.5, nobs)- 2
+    x4 = np.random.binomial(4, 0.5, nobs)
+    # # Scale each variable to have variance 1
+    # x0 /= np.std(x0)
+    # x1 /= np.std(x1)
+    # x2 /= np.std(x2)
+    # x3 /= np.std(x3)
+    # x4 /= np.std(x4)
 
     # Calculate Y based on the condition
-    y = x0 + 2*x2 + x3 + x4
+    y = 10*np.sign(x0*x3) + 2*x2 + x4
 
     # Create a DataFrame with the generated data
     data = {
@@ -290,4 +297,18 @@ def generate_mixed_cts_discrete_data(nobs):
         'y': y
     }
     return pd.DataFrame(data)
+
+
+
+if __name__ == "__main__":
+    pd.set_option('display.max_columns', None)
+    nobs = 1000
+    niter = 10
+    # Generate data
+    data = generate_mixed_cts_discrete_data(nobs)#generate_terc2_data(nobs)
+    # Separate features and target
+    X = data.drop(columns=['y'])
+    y = data['y']
+    new_X = preprocess_ot(X, 'x0')
+
 

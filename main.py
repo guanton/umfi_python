@@ -9,39 +9,39 @@ import pyreadr
 from tqdm import tqdm
 
 
-def calculate_feature_importance(df, methods, niter):
-    """
-    Calculates feature importance for different methods.
-
-    :param df: A DataFrame containing the data.
-    :param methods: A dictionary of methods for preprocessing.
-    :param niter: Number of iterations.
-    :return: A DataFrame containing the feature importance scores.
-    """
-    nX = df.shape[1] - 1 # number of features (not including response)
-    Imp = {method: np.zeros((niter, nX)) for method in methods.keys()}
-
-    for i in tqdm(range(niter)):
-        for method, preprocess_func in methods.items():
-            Imp[method][i, :] = UMFI(df.iloc[:, :-1], df['y'], preprocessing=preprocess_func)
-
-    # Normalize feature importance
-    Imp2 = Imp.copy()
-    epsilon = 1e-8  # Small constant to prevent division by zero
-    for key, value in Imp.items():
-        row_sums = value.sum(axis=1).reshape(-1, 1)
-        row_sums[row_sums == 0] = epsilon  # Replace zero sums with epsilon
-        Imp2[key] = (value * 100) / row_sums
-
-    # Convert results to data frames and concatenate properly
-    results = []
-    for key, value in Imp2.items():
-        df_result = pd.DataFrame(value, columns=df.columns[:-1])
-        df_result['method'] = key
-        results.append(df_result)
-
-    final_df = pd.concat(results, ignore_index=True)
-    return final_df
+# def calculate_feature_importance(df, methods, niter):
+#     """
+#     Calculates feature importance for different methods.
+#
+#     :param df: A DataFrame containing the data.
+#     :param methods: A dictionary of methods for preprocessing.
+#     :param niter: Number of iterations.
+#     :return: A DataFrame containing the feature importance scores.
+#     """
+#     nX = df.shape[1] - 1 # number of features (not including response)
+#     Imp = {method: np.zeros((niter, nX)) for method in methods.keys()}
+#
+#     for i in tqdm(range(niter)):
+#         for method, preprocess_func in methods.items():
+#             Imp[method][i, :] = UMFI(df.iloc[:, :-1], df['y'], preprocessing=preprocess_func)
+#
+#     # Normalize feature importance
+#     Imp2 = Imp.copy()
+#     epsilon = 1e-8  # Small constant to prevent division by zero
+#     for key, value in Imp.items():
+#         row_sums = value.sum(axis=1).reshape(-1, 1)
+#         row_sums[row_sums == 0] = epsilon  # Replace zero sums with epsilon
+#         Imp2[key] = (value * 100) / row_sums
+#
+#     # Convert results to data frames and concatenate properly
+#     results = []
+#     for key, value in Imp2.items():
+#         df_result = pd.DataFrame(value, columns=df.columns[:-1])
+#         df_result['method'] = key
+#         results.append(df_result)
+#
+#     final_df = pd.concat(results, ignore_index=True)
+#     return final_df
 # def plot_results(df):
 #     # Melt the dataframe for seaborn
 #     df_melted = df.melt(id_vars=["method"], var_name="Variable", value_name="Importance")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     # Calculate ultra-marginal feature importance using both preprocessing methods
     results = UMFI(X, y, preprocessing_methods=["ot", "lr"], niter = niter)
-    results.head()
+    print(results)
 
     # Plot the results
     plot_results(results,as_percentage=True)

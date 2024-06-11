@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 from umfi.preprocess_LR import preprocess_lr
-from umfi.preprocess_OT import preprocess_ot, preprocess_ot_discrete
+from umfi.preprocess_OT import preprocess_ot
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import r2_score, accuracy_score
 from tqdm import tqdm
+from minepy import MINE
 
 
 def UMFI(X, y, preprocessing_methods=["ot"], niter=10, n_trees = 100):
@@ -26,9 +27,11 @@ def UMFI(X, y, preprocessing_methods=["ot"], niter=10, n_trees = 100):
     '''
     results = []
 
+
     for method in preprocessing_methods:
         for _ in tqdm(range(niter), desc=f"Using {method} to remove dependencies"):
             umfi = np.zeros(X.shape[1])
+            correlations = np.zeros(X.shape[1])
             # compute UMFI for each feature (not including response)
             for i in range(X.shape[1]):
                 col_name = X.columns[i]
@@ -36,8 +39,26 @@ def UMFI(X, y, preprocessing_methods=["ot"], niter=10, n_trees = 100):
                 # the rest of the feature set
                 if method == "ot":
                     newX = preprocess_ot(X, col_name)
+
                 elif method == "lr":
                     newX = preprocess_lr(X, col_name)
+                # Compute correlation between X and newX
+                print(X.corrwith(newX))
+                # Compute mutual information score for each column
+                X_without = X.copy().drop(columns=[col_name])
+                newX_without = newX.copy().drop(columns=[col_name])
+                mine = MINE(alpha=0.6, c=15, est="mic_approx")
+
+                for col in X_without.columns:
+                    mine.compute_score(X_without[col].to_numpy(), newX_without[col].to_numpy())
+                    print(f"Maximal Information Coefficient between raw {col} and {col} after preprocessing w/r/t {col_name}: {mine.mic()}")
+                # correlations[i] = X.corrwith(newX).mean()
+                # use preprocessed set to predict protected feature
+                rf_preprocess = RandomForestRegressor(n_estimators=n_trees, oob_score=True)
+                rf_preprocess.fit(newX_without, X[col_name])
+                oob_r2_preprocess = max(0, rf_preprocess.oob_score_)
+
+                print(f'OOB R^2 for preprocessing predicting feature {col_name}:', oob_r2_preprocess)
 
                 # Detect whether y is numeric or categorical
                 if np.issubdtype(y.dtype, np.number):
@@ -69,6 +90,7 @@ def UMFI(X, y, preprocessing_methods=["ot"], niter=10, n_trees = 100):
                 'Feature': X.columns,
                 'Importance': umfi,
                 'Method': method,
+                'Correlation': correlations,
                 'Iteration': _
             })
 
