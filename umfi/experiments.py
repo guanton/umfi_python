@@ -197,3 +197,97 @@ def generate_msq_data(nobs):
     }
 
     return pd.DataFrame(data)
+
+
+def generate_terc1_data(nobs):
+    """
+    Generates data for the 'TERC-1' scenario.
+
+    :param nobs: Number of observations.
+    :return: A DataFrame containing the generated data.
+    """
+    # Generate F0, F1, F2 from a Bernoulli distribution with p=0.5
+    F0 = np.random.binomial(1, 0.5, nobs)
+    F1 = np.random.binomial(1, 0.5, nobs)
+    F2 = np.random.binomial(1, 0.5, nobs)
+
+    # F3, F4, F5 are copies of F0
+    F3 = F0
+    F4 = F0
+    F5 = F0
+
+    # Calculate Y based on the condition
+    y = np.where((F0 == F1) & (F1 == F2), 0, 1)
+
+    # Create a DataFrame with the generated data
+    data = {
+        'F0': F0,
+        'F1': F1,
+        'F2': F2,
+        'F3': F3,
+        'F4': F4,
+        'F5': F5,
+        'y': y
+    }
+
+    return pd.DataFrame(data)
+
+
+def generate_terc2_data(nobs):
+    """
+    Generates data for the 'TERC-2' scenario.
+
+    :param nobs: Number of observations.
+    :return: A DataFrame containing the generated data.
+    """
+
+    # Generate F0, F1, F2 from a Bernoulli distribution
+    F0 = np.random.binomial(1, 0.5, nobs)  # np.random.normal(0, 1, nobs)
+    F1 = np.random.binomial(1, 0.5, nobs)
+    F2 = np.random.binomial(1, 0.5, nobs)
+
+    # F3 is a copy of F0, F4 is a copy of F1, F5 is a copy of F2
+    F3 = F0
+    F4 = F1
+    F5 = F2
+
+    # Calculate Y based on the condition
+    y = np.where((F0 == F1) & (F1 == F2), 0, 1)
+
+    # Create a DataFrame with the generated data
+    data = {
+        'F0': F0,
+        'F1': F1,
+        'F2': F2,
+        'F3': F3,
+        'F4': F4,
+        'F5': F5,
+        'y': y
+    }
+
+    return pd.DataFrame(data)
+
+
+def generate_mixed_cts_discrete_data(nobs):
+    x0 = np.random.exponential(1, nobs)
+    x1 = np.random.uniform(-0.5, 0.5, nobs)
+
+    # Generate variables x1 and S from a standard normal distribution N(0, 1)
+    x2 = np.random.normal(0, 1, nobs)
+    x3 = np.random.binomial(1, 0.5, nobs)
+    x4 = np.random.binomial(5, 0.3, nobs)
+
+    # Calculate Y based on the condition
+    y = x0 + 2*x2 + x3 + x4
+
+    # Create a DataFrame with the generated data
+    data = {
+        'x0': x0,
+        'x1': x1,
+        'x2': x2,
+        'x3': x3,
+        'x4': x4,
+        'y': y
+    }
+    return pd.DataFrame(data)
+

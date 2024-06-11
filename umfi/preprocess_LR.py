@@ -7,7 +7,7 @@ def preprocess_lr(dat, protect):
     Creates an orthogonal representation of the data independent of the protected variable
     by replacing each variable with its residual from linear regression.
 
-    :param dat: A DataFrame or array-like of the input data.
+    :param dat: A DataFrame or array-like of the input features
     :param protect: The column index or name of the protected variable.
 
     :return: A DataFrame or array-like of the data with each variable orthogonalized with respect to the protected variable.
@@ -18,6 +18,7 @@ def preprocess_lr(dat, protect):
 
     # Create a copy of the input data
     modified_dat = dat.copy()
+    # we will remove dependencies of the protected feature from all other features
     tomodify = [col for col in dat.columns if col != protect]
 
     # Add random noise ahead of regression if the protected variable is too sparse
