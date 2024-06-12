@@ -4,8 +4,8 @@ from sklearn.linear_model import LinearRegression
 
 def preprocess_lr(dat, protect):
     '''
-    Creates an orthogonal representation of the data independent of the protected variable
-    by replacing each variable with its residual from linear regression.
+    This function preprocess the feature set (dat) to remove dependencies between the protected feature (Z)
+    and the rest of the features (X) by replacing each variable with its residual from linear regression
 
     :param dat: A DataFrame or array-like of the input features
     :param protect: The column index or name of the protected variable.
@@ -43,7 +43,7 @@ def preprocess_lr(dat, protect):
             modified_dat[col] = residuals
 
         # Add random noise if the residual variance is zero to avoid singularities
-        if np.var(modified_dat[col]) == 0:
-            modified_dat[col] += np.random.normal(size=len(modified_dat))
+        if np.var(modified_dat[col])  < 1e-10:
+            modified_dat[col] = np.random.normal(size=len(modified_dat))
 
     return modified_dat

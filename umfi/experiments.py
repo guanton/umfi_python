@@ -1,6 +1,7 @@
-import pandas as pd
-import numpy as np
 from umfi.preprocess_OT import *
+import pyreadr
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.metrics import r2_score, accuracy_score
 
 def generate_nonlinear_interaction_data(nobs):
     """
@@ -29,6 +30,8 @@ def generate_nonlinear_interaction_data(nobs):
 
     return pd.DataFrame(data)
 
+
+
 def generate_correlated_interaction_data(nobs):
     """
     Generates data for the 'Correlated_Interaction' scenario.
@@ -53,7 +56,6 @@ def generate_correlated_interaction_data(nobs):
     data['y'] = data['x1'] + data['x2'] + np.sign(data['x1'] * data['x2']) + data['x3'] + data['x4']
 
     return pd.DataFrame(data)
-
 
 def generate_correlation_data(nobs):
     """
@@ -137,7 +139,7 @@ def generate_rvq_data(nobs):
     F2 = F1
 
     # Calculate y based on the given relationship
-    y = F0 + 2 * F1
+    y = F0 + 10 * F1
 
     # Create a DataFrame with the generated data
     data = {
@@ -198,6 +200,57 @@ def generate_msq_data(nobs):
     }
 
     return pd.DataFrame(data)
+
+def generate_sg_data(nobs):
+    """
+    Generates data for the 'Synthetic genes' (SG) dataset.
+
+    :param nobs: Number of observations.
+    :return: A DataFrame containing the generated data.
+    """
+    # Generate Y from a Bernoulli distribution with p=0.5
+    y = np.random.binomial(1, 0.5, nobs)
+
+    f1 = np.zeros(nobs)
+    f2 = np.zeros(nobs)
+    f3 = np.zeros(nobs)
+
+    for i in range(nobs):
+        if y[i] == 0:
+            # For healthy samples (y=0)
+            prob_f1_f2 = np.random.rand()
+            if prob_f1_f2 < 0.95:
+                f1[i] = 1
+                f2[i] = 1
+            else:
+                f1_f2_joint_state = np.random.choice([0, 1], size=2, replace=True)
+                f1[i] = f1_f2_joint_state[0]
+                f2[i] = f1_f2_joint_state[1]
+            f3[i] = np.random.binomial(1, 0.2)
+        else:
+            # For cancerous samples (y=1)
+            prob_f1_f2 = np.random.rand()
+            if prob_f1_f2 < 0.05:
+                f1[i] = 1
+                f2[i] = 1
+            else:
+                f1_f2_joint_state = np.random.choice([0, 1], size=2, replace=True)
+                f1[i] = f1_f2_joint_state[0]
+                f2[i] = f1_f2_joint_state[1]
+            f3[i] = np.random.binomial(1, 0.8)
+
+    # Create a DataFrame with the generated data
+    data = {
+        'f1': f1,
+        'f2': f2,
+        'f3': f3,
+        'y': y
+    }
+
+
+    return pd.DataFrame(data)
+
+
 
 
 def generate_terc1_data(nobs):
@@ -298,17 +351,13 @@ def generate_mixed_cts_discrete_data(nobs):
     }
     return pd.DataFrame(data)
 
+def obtain_BRCA_data():
+    BRCA_data = pyreadr.read_r('data/BRCA.rda')
+    BRCA_df = list(BRCA_data.values())[0]
+    BRCA_df = BRCA_df.drop(columns='Sample.ID')
+    return BRCA_df
 
 
-if __name__ == "__main__":
-    pd.set_option('display.max_columns', None)
-    nobs = 1000
-    niter = 10
-    # Generate data
-    data = generate_mixed_cts_discrete_data(nobs)#generate_terc2_data(nobs)
-    # Separate features and target
-    X = data.drop(columns=['y'])
-    y = data['y']
-    new_X = preprocess_ot(X, 'x0')
+
 
 
