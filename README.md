@@ -13,3 +13,5 @@ $$U^{F,y}_\nu (x)= \nu(S^F_x \cup x) - \nu(S^F_x)$$
 We preprocess the data using either linear regression or optimal transport (from "An algorithm for removing sensitive information: application to race-independent recidivism prediction" by Johndrow et al.). These implementations are found in `preprocess_LR.py` and `preprocess_OT.py` respectively. In this code package, we have updated the optimal transport preprocessing method to also account for cases where variables are sampled from discrete random variables.
 
 Users can plot the UMFI scores using the function `plot_results` in `utils.py`.
+
+The required packages to run this code are given in `umfi.yml`. The compatible conda environment can be created by running `conda env create -f environment.yml`
