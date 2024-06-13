@@ -1,3 +1,5 @@
+import pandas as pd
+
 from umfi.preprocess_OT import *
 import pyreadr
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
@@ -139,7 +141,7 @@ def generate_rvq_data(nobs):
     F2 = F1
 
     # Calculate y based on the given relationship
-    y = F0 + 10 * F1
+    y = F0 + 2 * F1
 
     # Create a DataFrame with the generated data
     data = {
@@ -357,6 +359,9 @@ def obtain_BRCA_data():
     BRCA_df = BRCA_df.drop(columns='Sample.ID')
     return BRCA_df
 
+def obtain_CAMELS_data():
+    CAMELS_data = pd.read_csv('data/CAMELSbaseflow.csv')
+    return CAMELS_data
 
 
 

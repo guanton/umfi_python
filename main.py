@@ -1,17 +1,16 @@
 from umfi.experiments import *
 import numpy as np
 from umfi.UMFI import UMFI
+import matplotlib.pyplot as plt
 import pandas as pd
 from umfi.utils import plot_results
 
-def run_experiment(experiment_name, nobs, niter, as_percentage = True, optimal= False, select_optimal_preprocessing=True):
+def run_experiment(experiment_name, nobs, niter, as_percentage = True, select_optimal_preprocessing=True):
     """
     :param experiment_name: name of experiment
     :param nobs: number of observations for simulated data
     :param niter: number of iterations to run UMFI scores
     :param as_percentage: boolean, if true, normalizes UMFI scores in plot as percentages
-    :param optimal: boolean, if true, the plot will only show the UMFI scores computed for the optimal preprocessing
-    if false, the plot will display scores for both linear regression and optimal transport
     :param select_optimal_preprocessing: boolean, if true, the average UMFI scores will automatically use the best
     preprocessing in the computation. These scores will be reported in avg_scores
     :return:
@@ -38,6 +37,8 @@ def run_experiment(experiment_name, nobs, niter, as_percentage = True, optimal= 
         data = generate_sg_data(nobs)
     if experiment_name == 'mixed_cts_discrete':
         data = generate_mixed_cts_discrete_data(nobs)
+    if experiment_name == 'CAMELS':
+        data = obtain_CAMELS_data()
     if experiment_name == 'BRCA':
         data = obtain_BRCA_data()
         response_col_name = 'BRCA_Subtype_PAM50'
@@ -45,21 +46,27 @@ def run_experiment(experiment_name, nobs, niter, as_percentage = True, optimal= 
         response_col_name = 'y'
     X = data.drop(columns=[response_col_name])
     y = data[response_col_name]
-    avg_scores, detailed_results = UMFI(X, y, preprocessing_methods=["ot", "lr"], niter=niter,
-                                        select_optimal_preprocessing=select_optimal_preprocessing)
+    avg_scores, detailed_results = UMFI(X, y, preprocessing_methods=["optimal transport"], niter=niter,
+                                        select_optimal_preprocessing=False)
     print(f"Results for {experiment_name}: ")
     print(avg_scores)
     print(detailed_results)
+    # Save avg_scores and detailed_results as JSON files
+    avg_scores.to_json(f"{experiment_name}_avg_scores_niter-{niter}.json", orient='records', lines=True)
+    detailed_results.to_json(f"{experiment_name}_detailed_results_niter-{niter}.json", orient='records', lines=True)
     # Plot the results
-    plot_results(detailed_results, as_percentage = as_percentage, optimal = optimal, experiment_name = experiment_name)
+    plot_results(detailed_results, as_percentage = as_percentage, experiment_name = experiment_name)
+
 
 
 if __name__ == "__main__":
-    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)  # Show all rows
+    pd.set_option('display.max_columns', None)  # Show all columns
+    pd.set_option('display.width', None)  # Ensure the display is wide enough
+    pd.set_option('display.max_colwidth', None)  # Show full content of each column
     nobs = 1000
     niter = 5
-    # check msq: F0 should be most important
-    simulated_data_experiments = [ "msq"]
+    simulated_data_experiments = ["terc1", "terc2", "rvq", "svq", "msq", "sg"]
     for experiment_name in simulated_data_experiments:
         run_experiment(experiment_name, nobs, niter)
 

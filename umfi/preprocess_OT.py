@@ -44,7 +44,6 @@ def preprocess_ot(dat, protect, n_quan=None, min_sd=1e-6, discretization_quantil
                 x = np.round(ranks * discretization_quantiles / len(z), 0).astype(int)
                 newx = discrete_univariate_optimal_transport(x, z)
             else: # use classic quantile estimate if both variables are continuous
-                print('get fucked')
                 x = dat[j].values
                 newx = x.copy().astype(float)  # Create a copy of the feature
                 for quan in range(1, n_quan):
