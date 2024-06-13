@@ -2,7 +2,7 @@
 
 This is a new Python package for computing ultra-marginal feature importance ([paper link](https://proceedings.mlr.press/v206/janssen23a.html)), which measures the importance score that a specified feature has on a response variable. In contrast to feature importance scores that seek to explain the model, ultra-marginal feature importance was developed to explain the data. 
 
-Code for reproducing the simulated data experiments and real data experiments from our original paper ([paper link](https://proceedings.mlr.press/v206/janssen23a.html)) are included in `experiments.py` and can be run via `main.py`. `experiments.py` also includes simulated data experiments from the papers "Information-Theoretic State Variable Selection for Reinforcement Learning" by Westphal et al. ([arXiv link](https://arxiv.org/abs/2401.11512)) and "Partial Information Decomposition for Data Interpretability and Feature Selection" by Westphal et al. ([arXiv link](https://arxiv.org/abs/2405.19212)). 
+Code for reproducing the simulated data experiments and real data experiments from our original paper ([paper link](https://proceedings.mlr.press/v206/janssen23a.html)) are included in `experiments.py` and can be run via `main.py`. `experiments.py` also includes simulated data experiments from the papers "Information-Theoretic State Variable Selection for Reinforcement Learning" by Westphal et al. ([paper link](https://arxiv.org/abs/2401.11512)) and "Partial Information Decomposition for Data Interpretability and Feature Selection" by Westphal et al. ([paper link](https://arxiv.org/abs/2405.19212)). 
 
 ### Implementation of UMFI Scores
 
