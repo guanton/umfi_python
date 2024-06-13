@@ -65,7 +65,7 @@ if __name__ == "__main__":
     pd.set_option('display.width', None)  # Ensure the display is wide enough
     pd.set_option('display.max_colwidth', None)  # Show full content of each column
     nobs = 1000
-    niter = 5
+    niter = 50
     simulated_data_experiments = ["terc1", "terc2", "rvq", "svq", "msq", "sg"]
     for experiment_name in simulated_data_experiments:
         run_experiment(experiment_name, nobs, niter)
