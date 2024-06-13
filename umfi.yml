@@ -84,4 +84,4 @@ dependencies:
     - scikit-learn==1.5.0
     - scipy==1.13.1
     - threadpoolctl==3.5.0
-prefix: /Users/guan/opt/anaconda3/envs/umfi
+
