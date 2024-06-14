@@ -14,4 +14,4 @@ We preprocess the data using either linear regression or optimal transport (from
 
 Users can plot the UMFI scores using the function `plot_results` in `utils.py`.
 
-The required packages to run this code are given in `umfi.yml`. The compatible conda environment can be created by running `conda env create -f environment.yml`
+The required packages to run this code are given in `umfi.yml`. The compatible conda environment can be created by running `conda env create -f umfi.yml`
